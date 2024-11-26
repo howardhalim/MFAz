@@ -1,0 +1,26 @@
+
+Blockchain
+- Smart Contract (Done)
+- Event (Done)
+
+
+Gateway:
+- Bloom Filter (done)
+- Secret Generate (Done)
+- Verification Point (done)
+- Post/Get Request (Done)
+- web3py (Done)
+- Update and Get Event (Done)
+
+
+Create User and its input
+Save VPs and GAs to .txt in their respective field
+VPs save by gateway
+GAs save by user
+
+# Assumption:
+- user is hardcoded into gateway, a user file (representing user) to start the system which call the gateway.
+- GAs user return to the user file and print it into a specific folder
+
+
+-read,write,execute
