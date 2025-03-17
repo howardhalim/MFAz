@@ -1,0 +1,9 @@
+version : "2"
+authtoken : YOUR_NGROK_AUTH_TOKEN
+tunnels:
+  first-tunnel: #MFAZ
+    proto: http
+    addr: 8080
+  second-tunnel: #gateway
+    proto: http
+    addr: 5000

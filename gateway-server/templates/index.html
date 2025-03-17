@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <h1>Dummy Gateway Server (Gateway) : </h1>
+    <p>The current Gateway ID is: <strong>{{ gateway_id }}</strong></p>
+    <button id="fetch-data-btn">Access Request</button>
+    <div id="api-data">
+        <!-- API data will appear here -->
+    </div>
+    
+    <!-- Button to toggle visibility of Dummy Access section -->
+    <button id="toggle-dummy-btn">Show/Hide Dummy Access</button>
+
+    <button id="fetch-data-dummy" style="display: none;" >Dummy Access</button>
+    <div id="api-data-dummy" style="display: none;">
+        <!-- API data will appear here -->
+    </div>
+
+    <div>
+        <p>URL: </p><input type="text" id="user-input" placeholder="Enter your string" />
+        <button id="access-gateway-btn">Access Gateway</button>
+    </div>
+    <div id="request-data">
+        <!-- API data will appear here -->
+    </div>
+
+    <h1>Caller Information</h1>
+
+    <div id="caller-info">
+        <!-- Caller data will be dynamically added here -->
+    </div>
+
+
+    <script>
+        document.getElementById('fetch-data-dummy').addEventListener('click', function () {
+            fetch('/auth', { method: 'POST' }) 
+                .then(response => response.json())
+                .then(data => {
+                    // Update the page with the API data
+                    const apiDataDiv = document.getElementById('api-data-dummy');
+                    apiDataDiv.innerHTML = `
+                            <p><strong>GA:</strong> ${data.GA}</p>
+                        `;
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        document.getElementById('fetch-data-btn').addEventListener('click', function () {
+                fetch('/verify', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the page with the API data
+                        const apiDataDiv = document.getElementById('api-data');
+                        apiDataDiv.innerHTML = `
+                            <p><strong>GA:</strong> ${data.GA}</p>
+                        `;
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            });
+        document.getElementById('toggle-dummy-btn').addEventListener('click', function () {
+                // Get the dummy data section
+                const dummyDataDiv = document.getElementById('api-data-dummy');
+                const dummyButton = document.getElementById('fetch-data-dummy');
+
+                // Toggle the display style (show/hide)
+                if (dummyDataDiv.style.display === "none") {
+                    dummyDataDiv.style.display = "block";  // Show the section
+                    dummyButton.style.display = "block";
+                } else {
+                    dummyDataDiv.style.display = "none";   // Hide the section
+                    dummyButton.style.display= "none";
+                }
+            });
+            document.getElementById('access-gateway-btn').addEventListener('click', function () {
+                // Get the user input
+                const userInput = document.getElementById('user-input').value;
+
+                if (!userInput.trim()) {
+                    alert('Please enter a valid string.');
+                    return;
+                }
+
+                // Send the user input to the API via POST
+                fetch('/access-gateway', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userInput: userInput }), // Include the user input in the request body
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Update the page with the API data
+                        const apiDataDiv = document.getElementById('request-data');
+                        apiDataDiv.innerHTML = `
+                            <p><strong>From:</strong> ${data.from} </p>
+                            <p><strong>GA:</strong> ${data.GA}</p>
+                        `;
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+                
+            });
+
+            const eventSource = new EventSource('/stream-caller-info');
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                const tbody = document.getElementById('caller-info');
+                tbody.innerHTML = `
+                    <p><strong>From:</strong> ${data.caller} </p>
+                    <p><strong>GA:</strong> ${data.GA}</p>
+                `
+
+                
+            };
+
+            eventSource.onerror = function() {
+                console.error('Error occurred while connecting to the event stream.');
+            };
+
+    </script>
+
+</body>
+
+</html>
