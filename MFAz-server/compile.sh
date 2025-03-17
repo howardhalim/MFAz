@@ -1,0 +1,1 @@
+g++ bloom.c bloom_func.cpp api.cpp main.cpp function.cpp -o main miracl.a -lcppcms -lcurl -lmysqlcppconn

@@ -1,0 +1,1 @@
+g++ -std=c++17 bloom.c bloom_func.cpp api.cpp test.cpp function.cpp -o test miracl.a -lcppcms -lcurl
